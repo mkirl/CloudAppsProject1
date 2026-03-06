@@ -1,0 +1,19 @@
+
+import google/protobuf/empty.proto
+
+service HardwareService {
+    rpc GetHardwareResources (google.protobuf.empty) returns (Hardware) {}
+    rpc RequestHardware (HardwareQuantity) returns (google.protobuf.empty) {}
+    rpc ReturnHardware (HardwareQuantity) returns (google.protobuf.empty) {}
+}
+
+message Hardware {
+    string set = 1;
+    int32 capacity = 2;
+    int32 available = 3;
+    int32 checkedOut = 4;
+}
+
+message HardwareQuantity {
+    int32 quantity = 1;
+}

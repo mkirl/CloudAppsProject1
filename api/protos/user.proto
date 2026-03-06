@@ -20,7 +20,7 @@ message LoginResponse {
     string refresh_token = 2;
     string token_type = 3;
     int32 expires_in = 4;
-    repeated User user = 5;
+    User user = 5;
 }
 
 message User {

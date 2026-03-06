@@ -1,0 +1,17 @@
+
+service ProjectService {
+
+    rpc GetUserProjects (google.protobuf.empty) returns (Project) {}
+    rpc CreateProject (Project) returns (Project) {}
+    rpc JoinProject (ProjectId) returns (Project) {}
+}
+
+message Project {
+    string name = 1;
+    string description = 2;
+    ProjectId id = 3;
+}
+
+message ProjectId {
+    string id = 1;
+}
