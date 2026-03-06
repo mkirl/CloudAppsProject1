@@ -1,0 +1,30 @@
+service UserService {
+    rpc Login (LoginCredentials) returns (LoginResponse) {}
+    rpc Register (RegisterCredentials) returns (User) {}
+}
+
+message LoginCredentials {
+    string email = 1;
+    string password = 2;
+    bool rememberMe = 3;
+}
+
+message RegisterCredentials {
+    string email = 1;
+    string password = 2;
+    string confirmPassword = 3;
+}
+
+message LoginResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+    string token_type = 3;
+    int32 expires_in = 4;
+    repeated User user = 5;
+}
+
+message User {
+    string id = 1;
+    string email = 2;
+}
+
