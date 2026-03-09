@@ -1,18 +1,46 @@
+import google/protobuf/empty.proto
+
 service UserService {
     rpc Login (LoginCredentials) returns (LoginResponse) {}
     rpc Register (RegisterCredentials) returns (User) {}
+    rpc Logout (google.protobuf.empty) returns (google.protobuf.empty)
+    rpc ForgotPassword (EmailRequest) returns (google.protobuf.empty)
+    rpc ResetPassword (ResetCredentials) returns (google.protobuf.empty)
+}
+
+message EmailRequest {
+    string email = 1;
+}
+
+message PasswordPair {
+    string password = 1;
+    string confirm_password = 2;
+
+}
+
+message User {
+    string id = 1;
+    string email = 2;
+}
+
+message RefreshToken {
+    string refresh_token = 1;
 }
 
 message LoginCredentials {
     string email = 1;
     string password = 2;
-    bool rememberMe = 3;
+    bool remember_me = 3;
 }
 
 message RegisterCredentials {
     string email = 1;
-    string password = 2;
-    string confirmPassword = 3;
+    PasswordPair passwords = 2;
+}
+
+message ResetCredentials {
+    string token = 1;
+    PasswordPair passwords = 2;
 }
 
 message LoginResponse {
@@ -21,10 +49,5 @@ message LoginResponse {
     string token_type = 3;
     int32 expires_in = 4;
     User user = 5;
-}
-
-message User {
-    string id = 1;
-    string email = 2;
 }
 
