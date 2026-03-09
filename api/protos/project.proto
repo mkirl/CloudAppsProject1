@@ -1,18 +1,57 @@
-import google/protobuf/empty.proto
+syntax = "proto3";
+
+package haas.project.v1;
+
+option go_package = "github.com/haas/gen/project/v1";
+
+import "google/protobuf/timestamp.proto";
 
 service ProjectService {
+    rpc GetUserProjects (UserIdRequest)        returns (ProjectListResponse) {}
+    rpc GetProject      (ProjectIdRequest)     returns (Project)             {}
+    rpc CreateProject   (CreateProjectRequest) returns (Project)             {}
+    rpc JoinProject     (JoinProjectRequest)   returns (Project)             {}
+}
 
-    rpc GetUserProjects (google.protobuf.empty) returns (Project) {}
-    rpc CreateProject (Project) returns (Project) {}
-    rpc JoinProject (ProjectId) returns (Project) {}
+// --- Request Messages ---
+
+message UserIdRequest {
+    string user_id = 1;
+}
+
+message ProjectIdRequest {
+    string project_id = 1;
+}
+
+message CreateProjectRequest {
+    string user_id     = 1;
+    string name        = 2;
+    string description = 3;
+}
+
+message JoinProjectRequest {
+    string user_id    = 1;
+    string project_id = 2;
+}
+
+// --- Response / Entity Messages ---
+
+message HardwareAllocation {
+    string hw_set_id = 1;
+    uint32 quantity  = 2;
 }
 
 message Project {
-    string name = 1;
-    string description = 2;
-    ProjectId id = 3;
+    string                    project_id       = 1;
+    string                    name             = 2;
+    string                    description      = 3;
+    string                    owner_id         = 4;
+    repeated string           member_ids       = 5;
+    repeated HardwareAllocation hw_allocations = 6;
+    google.protobuf.Timestamp created_at       = 7;
+    google.protobuf.Timestamp updated_at       = 8;
 }
 
-message ProjectId {
-    string id = 1;
+message ProjectListResponse {
+    repeated Project projects = 1;
 }
