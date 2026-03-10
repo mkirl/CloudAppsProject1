@@ -11,6 +11,7 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { HardwareManagement } from './components/HardwareManagement'
+import { Billing } from './components/Billing'
 
 function App() {
   return (
@@ -34,6 +35,11 @@ function App() {
                 <HardwareManagement/>
               </ProtectedRoute>
             }/>
+            <Route path="/billing" element={
+              <ProtectedRoute>
+                <Billing />
+              </ProtectedRoute>
+            } />
           </Routes>
           <Footer/>
         </BrowserRouter>

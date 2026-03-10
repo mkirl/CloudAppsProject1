@@ -109,3 +109,40 @@ def join_project():
         'name': project['name'],
         'description': project.get('description', '')
     }), 200
+
+@projects_bp.route('/<project_id>/hardware', methods=['GET'])
+@jwt_required
+def get_project_hardware_billing(project_id):
+    """Get hardware checked out to a project, for billing purposes."""
+
+    # Fetch the project
+    project = current_app.db.projects.find_one({'project_id': project_id})
+    if not project:
+        return jsonify({'error': 'Project not found'}), 404
+
+    # Ensure the requesting user is a member
+    user_id = str(g.current_user['_id'])
+    if user_id not in project.get('members', []):
+        return jsonify({'error': 'You are not a member of this project'}), 403
+
+    # Look up HW Set 1 and HW Set 2 from the hardware collection
+    hw_set_1_doc = current_app.db.hardware.find_one({'name': 'HW Set 1'})
+    hw_set_2_doc = current_app.db.hardware.find_one({'name': 'HW Set 2'})
+
+    hw_set_1_id = str(hw_set_1_doc['_id']) if hw_set_1_doc else None
+    hw_set_2_id = str(hw_set_2_doc['_id']) if hw_set_2_doc else None
+
+    # Sum up allocations for each set from the project's hw_allocations array
+    hw_set_1_count = 0
+    hw_set_2_count = 0
+
+    for alloc in project.get('hw_allocations', []):
+        if alloc['hw_set_id'] == hw_set_1_id:
+            hw_set_1_count += alloc.get('count', 0)
+        elif alloc['hw_set_id'] == hw_set_2_id:
+            hw_set_2_count += alloc.get('count', 0)
+
+    return jsonify({
+        'hw_set_1': hw_set_1_count,
+        'hw_set_2': hw_set_2_count,
+    }), 200
