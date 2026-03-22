@@ -70,8 +70,8 @@ def register():
 
     stub = get_user_stub()
 
-    registered = stub.RegisterUser(user_pb2.RegisterRequest(
-        userid=user_doc["email"],
+    registered = stub.Register(user_pb2.RegisterRequest(
+        userId=user_doc["email"],
         username=user_doc["email"],
         password=password_hash))
 
@@ -96,11 +96,11 @@ def login():
     if not email or not password:
         return jsonify({'error': 'Email and password are required'}), 400
 
-    hash_password = hash_password(password)
+    hashed = hash_password(password)
 
     # Find user
     stub = get_user_stub()
-    login = stub.Login(user_pb2.LoginRequest(userId=email, password=hash_password))
+    login = stub.Login(user_pb2.LoginRequest(userId=email, password=hashed))
     if not login.ok:
         return jsonify({'error': 'Invalid credentials'}), 401
 
@@ -116,7 +116,7 @@ def login():
     # user_id = str(user['_id'])
     # access_token, expires_in = create_access_token(user_id, remember_me)
     # refresh_token = create_refresh_token(user_id, remember_me)
-    user = create_user_document(email, hash_password)
+    user = create_user_document(email, hashed)
 
     return jsonify({
         'access_token': login.token,
@@ -158,11 +158,11 @@ def refresh():
 @jwt_required
 def get_current_user():
     """Get current authenticated user."""
-    metadata = [('Authorization', f'Bearer {g.current_token}')]
+    metadata = [('authorization', f'Bearer {g.current_token}')]
     stub = get_user_stub()
     user = stub.Me(user_pb2.MeRequest(), metadata=metadata)
     return jsonify({
-        'user': user_to_response({"email" : user.UserId})
+        'user': user_to_response({"email" : user.userId})
     }), 200
 
 

@@ -44,7 +44,7 @@ def get_user_projects():
     result = []
     for project in user_projects:
         result.append({
-            'id': str(project.project_id),
+            'id': project.slug,
             'name': project.name,
             'description': project.description
         })
@@ -113,27 +113,24 @@ def join_project():
     if not project_id:
         return jsonify({'error': 'Project ID is required'}), 400
 
-    # Find the project
+    token = g.current_token
     stub = get_project_stub()
+
+    # Find the project
     project = stub.GetProject(project_pb2.GetProjectRequest(token=token, project_slug=project_id)).project
 
     if not project:
         return jsonify({'error': 'Project not found'}), 404
-
-    user_id = str(g.current_user['_id'])
-
-    # Extract the ObjectId for update
-    project_id = str(project.project_id)
 
     # Check if already a member
     if stub.CheckUserInProject(project_pb2.CheckUserInProjectRequest(token=token, project_slug=project.slug)).in_project:
         return jsonify({'error': 'Already a member of this project'}), 400
 
     # Add user to members
-    joined = stub.JoinProjectRequest(token=token, project_slug=project.slug)
+    stub.JoinProject(project_pb2.JoinProjectRequest(token=token, project_slug=project.slug))
 
     return jsonify({
-        'id': project.project_id,
+        'id': project.slug,
         'name': project.name,
         'description': project.description
     }), 200
