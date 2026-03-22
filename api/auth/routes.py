@@ -1,8 +1,11 @@
 from datetime import datetime, timedelta, timezone
 from flask import Blueprint, request, jsonify, current_app, g
 from bson import ObjectId
+import grpc
+import os
 from pymongo.errors import DuplicateKeyError
 
+from api.auth import user_pb2, user_pb2_grpc
 from api.auth.utils import (
     hash_password,
     verify_password,
@@ -21,6 +24,21 @@ from api.auth.decorators import jwt_required
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
+def get_user_stub():
+    # Reuse a single channel/stub per Flask app instance.
+    ext = current_app.extensions
+    if "user_grpc_stub" not in ext:
+        addr = current_app.config.get(
+            "USER_GRPC_ADDR",
+            os.environ.get("USER_GRPC_ADDR", "user-service.politesky-57421525.centralus.azurecontainerapps.io:443"),
+        )
+        
+        channel = grpc.secure_channel(addr, grpc.ssl_channel_credentials())
+
+        ext["user_grpc_channel"] = channel
+        ext["user_grpc_stub"] = user_pb2_grpc.UserServiceStub(channel)
+
+    return ext["user_grpc_stub"]
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -49,10 +67,15 @@ def register():
     password_hash = hash_password(password)
     user_doc = create_user_document(email, password_hash)
 
-    try:
-        result = current_app.db.users.insert_one(user_doc)
-        user_doc['_id'] = result.inserted_id
-    except DuplicateKeyError:
+
+    stub = get_user_stub()
+
+    registered = stub.Register(user_pb2.RegisterRequest(
+        userId=user_doc["email"],
+        username=user_doc["email"],
+        password=password_hash))
+
+    if not registered.ok:
         return jsonify({'error': 'Email already registered'}), 409
 
     return jsonify({
@@ -73,29 +96,30 @@ def login():
     if not email or not password:
         return jsonify({'error': 'Email and password are required'}), 400
 
+    hashed = hash_password(password)
+
     # Find user
-    user = current_app.db.users.find_one({'email': email})
-    if not user:
+    stub = get_user_stub()
+    login = stub.Login(user_pb2.LoginRequest(userId=email, password=hashed))
+    if not login.ok:
         return jsonify({'error': 'Invalid credentials'}), 401
 
-    # Verify password
-    if not verify_password(password, user['password_hash']):
-        return jsonify({'error': 'Invalid credentials'}), 401
+    # # Verify password
+    # if not verify_password(password, user['password_hash']):
+    #     return jsonify({'error': 'Invalid credentials'}), 401
 
-    # Check if user is active
-    if not user.get('is_active', True):
-        return jsonify({'error': 'Account is inactive'}), 401
+    # # Check if user is active
+    # if not user.get('is_active', True):
+    #     return jsonify({'error': 'Account is inactive'}), 401
 
     # Generate tokens
-    user_id = str(user['_id'])
-    access_token, expires_in = create_access_token(user_id, remember_me)
-    refresh_token = create_refresh_token(user_id, remember_me)
+    # user_id = str(user['_id'])
+    # access_token, expires_in = create_access_token(user_id, remember_me)
+    # refresh_token = create_refresh_token(user_id, remember_me)
+    user = create_user_document(email, hashed)
 
     return jsonify({
-        'access_token': access_token,
-        'refresh_token': refresh_token,
-        'token_type': 'Bearer',
-        'expires_in': expires_in,
+        'access_token': login.token,
         'user': user_to_response(user)
     }), 200
 
@@ -134,8 +158,11 @@ def refresh():
 @jwt_required
 def get_current_user():
     """Get current authenticated user."""
+    metadata = [('authorization', f'Bearer {g.current_token}')]
+    stub = get_user_stub()
+    user = stub.Me(user_pb2.MeRequest(), metadata=metadata)
     return jsonify({
-        'user': user_to_response(g.current_user)
+        'user': user_to_response({"email" : user.userId})
     }), 200
 
 

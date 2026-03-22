@@ -13,6 +13,8 @@ dependencies = [
     "flask-mail>=0.10.0",
     "gunicorn>=25.0.1",
     "dnspython>=2.8.0",
+    "grpcio-tools>=1.78.0",
+    "grpcio>=1.78.0",
 ]
 
 [dependency-groups]

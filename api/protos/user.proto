@@ -1,0 +1,24 @@
+syntax = "proto3";
+package haas.user;
+
+service UserService {
+  rpc Register (RegisterRequest) returns (RegisterResponse);
+  rpc Login    (LoginRequest)    returns (LoginResponse);
+  rpc Me       (MeRequest)       returns (MeResponse);
+}
+
+message RegisterRequest {
+  string userId = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message RegisterResponse { bool ok = 1; string message = 2; }
+
+message LoginRequest { string userId = 1; string password = 2; }
+
+message LoginResponse { bool ok = 1; string token = 2; string message = 3; }
+
+message MeRequest {}
+
+message MeResponse { bool ok = 1; string userId = 2; string username = 3; string message = 4; }

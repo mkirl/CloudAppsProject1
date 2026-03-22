@@ -12,7 +12,6 @@ export type Hardware = {
 }
 
 export type User = {
-    id: string;
     email: string;
 };
 
@@ -36,8 +35,5 @@ export type RegisterCredentials = {
 
 export type LoginResponse = {
     access_token: string;
-    refresh_token: string;
-    token_type: string;
-    expires_in: number;
     user: User;
 };

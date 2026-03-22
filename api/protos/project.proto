@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+service ProjectService {
+  rpc CreateProject(CreateProjectRequest) returns (CreateProjectResponse);
+  rpc ListProjects(ListProjectsRequest) returns (ListProjectsResponse);
+  rpc GetProject(GetProjectRequest) returns (GetProjectResponse);
+  rpc JoinProject(JoinProjectRequest) returns (JoinProjectResponse);
+  rpc LeaveProject(LeaveProjectRequest) returns (LeaveProjectResponse);
+  rpc CheckUserInProject(CheckUserInProjectRequest) returns (CheckUserInProjectResponse);
+  rpc ValidateProject(ValidateProjectRequest) returns (ValidateProjectResponse);
+}
+
+message Project {
+  string id = 1;
+  string slug = 2;
+  string name = 3;
+  string description = 4;
+  string owner = 5;
+  repeated string users = 6;
+}
+
+message CreateProjectRequest {
+  string token = 1;
+  string slug = 2;
+  string name = 3;
+  string description = 4;
+}
+
+message CreateProjectResponse {
+  string project_id = 1;
+}
+
+message ListProjectsRequest {
+  string token = 1;
+}
+
+message ListProjectsResponse {
+  repeated Project projects = 1;
+}
+
+message GetProjectRequest {
+  string token = 1;
+  string project_slug = 2;
+}
+
+message GetProjectResponse {
+  Project project = 1;
+}
+
+message JoinProjectRequest {
+  string token = 1;
+  string project_slug = 2;
+}
+
+message JoinProjectResponse {
+  string message = 1;
+  string project_id = 2;
+  string project_slug = 3;
+  string project_name = 4;
+}
+
+message LeaveProjectRequest {
+  string token = 1;
+  string project_slug = 2;
+}
+
+message LeaveProjectResponse {
+  string message = 1;
+  string project_id = 2;
+  string project_slug = 3;
+  string project_name = 4;
+}
+
+message CheckUserInProjectRequest {
+  string token = 1;
+  string project_slug = 2;
+}
+
+message CheckUserInProjectResponse {
+  bool in_project = 1;
+}
+
+message ValidateProjectRequest {
+  string project_id = 1;
+}
+
+message ValidateProjectResponse {
+  bool valid = 1;
+}

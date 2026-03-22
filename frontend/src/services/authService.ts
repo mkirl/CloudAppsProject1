@@ -4,7 +4,6 @@ import type { LoginCredentials, RegisterCredentials, LoginResponse, User } from 
 const API_URL = '/api/auth';
 
 const ACCESS_TOKEN_KEY = 'access_token';
-const REFRESH_TOKEN_KEY = 'refresh_token';
 
 export const authService = {
     async register(credentials: RegisterCredentials): Promise<{ user: User }> {
@@ -23,30 +22,13 @@ export const authService = {
             remember_me: credentials.rememberMe || false,
         });
 
-        this.setTokens(response.data.access_token, response.data.refresh_token);
+        this.setToken(response.data.access_token);
 
         return response.data;
     },
 
     async logout(): Promise<void> {
         this.clearTokens();
-    },
-
-    async refreshToken(): Promise<string | null> {
-        const refreshToken = this.getRefreshToken();
-        if (!refreshToken) return null;
-
-        try {
-            const response = await axios.post(`${API_URL}/refresh`, {
-                refresh_token: refreshToken,
-            });
-            const newAccessToken = response.data.access_token;
-            localStorage.setItem(ACCESS_TOKEN_KEY, newAccessToken);
-            return newAccessToken;
-        } catch {
-            this.clearTokens();
-            return null;
-        }
     },
 
     async getCurrentUser(): Promise<User | null> {
@@ -75,22 +57,16 @@ export const authService = {
         });
     },
 
-    setTokens(accessToken: string, refreshToken: string): void {
+    setToken(accessToken: string): void {
         localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
     },
 
     getAccessToken(): string | null {
         return localStorage.getItem(ACCESS_TOKEN_KEY);
     },
 
-    getRefreshToken(): string | null {
-        return localStorage.getItem(REFRESH_TOKEN_KEY);
-    },
-
     clearTokens(): void {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
     },
 
     isAuthenticated(): boolean {
