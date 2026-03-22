@@ -1,72 +1,24 @@
 syntax = "proto3";
-
-package haas.user.v1;
-
-option go_package = "github.com/haas/gen/user/v1";
-
-import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
+package haas.user;
 
 service UserService {
-    rpc Login          (LoginCredentials)    returns (LoginResponse)          {}
-    rpc Register       (RegisterCredentials) returns (LoginResponse)          {}
-    rpc Logout         (RefreshTokenRequest) returns (google.protobuf.Empty)  {}
-    rpc RefreshToken   (RefreshTokenRequest) returns (TokenResponse)          {}
-    rpc GetMe          (google.protobuf.Empty) returns (User)                 {}
-    rpc ForgotPassword (EmailRequest)        returns (google.protobuf.Empty)  {}
-    rpc ResetPassword  (ResetCredentials)    returns (google.protobuf.Empty)  {}
+  rpc Register (RegisterRequest) returns (RegisterResponse);
+  rpc Login    (LoginRequest)    returns (LoginResponse);
+  rpc Me       (MeRequest)       returns (MeResponse);
 }
 
-// --- Request Messages ---
-
-message LoginCredentials {
-    string email       = 1;
-    string password    = 2;
-    bool   remember_me = 3;
+message RegisterRequest {
+  string userId = 1;
+  string username = 2;
+  string password = 3;
 }
 
-message RegisterCredentials {
-    string      email     = 1;
-    PasswordPair passwords = 2;
-}
+message RegisterResponse { bool ok = 1; string message = 2; }
 
-message ResetCredentials {
-    string       token     = 1;
-    PasswordPair passwords = 2;
-}
+message LoginRequest { string userId = 1; string password = 2; }
 
-message EmailRequest {
-    string email = 1;
-}
+message LoginResponse { bool ok = 1; string token = 2; string message = 3; }
 
-message RefreshTokenRequest {
-    string refresh_token = 1;
-}
+message MeRequest {}
 
-message PasswordPair {
-    string password         = 1;
-    string confirm_password = 2;
-}
-
-// --- Response / Entity Messages ---
-
-message User {
-    string                    id         = 1;
-    string                    email      = 2;
-    google.protobuf.Timestamp created_at = 3;
-}
-
-message LoginResponse {
-    string access_token  = 1;
-    string refresh_token = 2;
-    string token_type    = 3;
-    int32  expires_in    = 4;
-    User   user          = 5;
-}
-
-message TokenResponse {
-    string access_token  = 1;
-    string refresh_token = 2;
-    string token_type    = 3;
-    int32  expires_in    = 4;
-}
+message MeResponse { bool ok = 1; string userId = 2; string username = 3; string message = 4; }

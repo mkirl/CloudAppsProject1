@@ -1,3 +1,6 @@
+import os
+import grpc
+from api.projects import project_pb2
 from flask import Blueprint, request, jsonify, current_app, g
 from bson import ObjectId
 
@@ -6,6 +9,32 @@ from api.auth.decorators import jwt_required
 projects_bp = Blueprint('projects', __name__, url_prefix='/api/projects')
 
 
+from api.projects import project_pb2, project_pb2_grpc
+
+
+def get_project_stub():
+    # Reuse a single channel/stub per Flask app instance.
+    ext = current_app.extensions
+    if "project_grpc_stub" not in ext:
+        addr = current_app.config.get(
+            "PROJECT_GRPC_ADDR",
+            os.environ.get("PROJECT_GRPC_ADDR", "localhost:50051"),
+        )
+        use_tls = current_app.config.get(
+            "PROJECT_GRPC_SECURE",
+            os.environ.get("PROJECT_GRPC_SECURE", "false").lower() == "true",
+        )
+
+        if use_tls:
+            channel = grpc.secure_channel(addr, grpc.ssl_channel_credentials())
+        else:
+            channel = grpc.insecure_channel(addr)
+
+        ext["project_grpc_channel"] = channel
+        ext["project_grpc_stub"] = project_pb2_grpc.ProjectServiceStub(channel)
+
+    return ext["project_grpc_stub"]
+
 @projects_bp.route('', methods=['GET'])
 @jwt_required
 def get_user_projects():
@@ -13,15 +42,17 @@ def get_user_projects():
     user_id = str(g.current_user['_id'])
 
     # Find projects where user is a member
-    projects = current_app.db.projects.find({'members': user_id})
+    stub = get_project_stub()
+    projects = stub.ListProjects(project_pb2.ListProjectsRequest(token=token)).projects
+    user_projects = [project for project in projects if stub.CheckUserInProject(project_pb2.CheckUserInProjectRequest(token=token, project_slug=project.slug)).in_project]
 
     # Convert to list and format response
     result = []
-    for project in projects:
+    for project in user_projects:
         result.append({
-            'id': str(project['project_id']),
-            'name': project['name'],
-            'description': project.get('description', '')
+            'id': str(project.project_id),
+            'name': project.name,
+            'description': project.description
         })
 
     return jsonify(result), 200
@@ -58,8 +89,16 @@ def create_project():
         'hw_allocations': []   # No hardware allocated initially
     }
 
-    result = current_app.db.projects.insert_one(project_doc)
-    project_doc['_id'] = result.inserted_id
+    stub = get_project_stub()
+
+    result = stub.CreateProject(project_pb2.CreateProjectRequest(
+        token=token,
+        slug=project_id,
+        name=name,
+        description=description
+    ))
+
+    project_doc['_id'] = result.project_id
 
     return jsonify({
         'id': project_doc['project_id'],
@@ -80,27 +119,26 @@ def join_project():
         return jsonify({'error': 'Project ID is required'}), 400
 
     # Find the project
-    project = current_app.db.projects.find_one({'project_id': project_id})
+    stub = get_project_stub()
+    project = stub.GetProject(project_pb2.GetProjectRequest(token=token, project_slug=project_id)).project
+
     if not project:
         return jsonify({'error': 'Project not found'}), 404
 
     user_id = str(g.current_user['_id'])
 
     # Extract the ObjectId for update
-    obj_id = str(project['_id'])
+    project_id = str(project.project_id)
 
     # Check if already a member
-    if user_id in project.get('members', []):
+    if stub.CheckUserInProject(project_pb2.CheckUserInProjectRequest(token=token, project_slug=project.slug)).in_project:
         return jsonify({'error': 'Already a member of this project'}), 400
 
     # Add user to members
-    current_app.db.projects.update_one(
-        {'_id': ObjectId(obj_id)},
-        {'$push': {'members': user_id}}
-    )
+    joined = stub.JoinProjectRequest(token=token, project_slug=project.slug)
 
     return jsonify({
-        'id': project['project_id'],
-        'name': project['name'],
-        'description': project.get('description', '')
+        'id': project.project_id,
+        'name': project.name,
+        'description': project.description
     }), 200
