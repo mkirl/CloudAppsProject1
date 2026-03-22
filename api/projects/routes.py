@@ -20,15 +20,8 @@ def get_project_stub():
             "PROJECT_GRPC_ADDR",
             os.environ.get("PROJECT_GRPC_ADDR", "localhost:50051"),
         )
-        use_tls = current_app.config.get(
-            "PROJECT_GRPC_SECURE",
-            os.environ.get("PROJECT_GRPC_SECURE", "false").lower() == "true",
-        )
-
-        if use_tls:
-            channel = grpc.secure_channel(addr, grpc.ssl_channel_credentials())
-        else:
-            channel = grpc.insecure_channel(addr)
+        
+        channel = grpc.secure_channel(addr, grpc.ssl_channel_credentials())
 
         ext["project_grpc_channel"] = channel
         ext["project_grpc_stub"] = project_pb2_grpc.ProjectServiceStub(channel)
@@ -40,6 +33,7 @@ def get_project_stub():
 def get_user_projects():
     """Get all projects for the current user."""
     user_id = str(g.current_user['_id'])
+    token = g.current_token
 
     # Find projects where user is a member
     stub = get_project_stub()
@@ -79,6 +73,7 @@ def create_project():
         return jsonify({'error': 'Project ID is required'}), 400
 
     user_id = str(g.current_user['_id'])
+    token = g.current_token
 
     # Create project document
     project_doc = {

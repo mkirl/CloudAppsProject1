@@ -31,8 +31,7 @@ def create_user_document(email: str, password_hash: str) -> dict:
 
 
 def user_to_response(user: dict) -> dict:
-    """Convert MongoDB user document to API response format."""
+    """Convert user document to API response format."""
     return {
-        'id': str(user['_id']),
-        'email': user['email'],
+        'email': user['email']
     }

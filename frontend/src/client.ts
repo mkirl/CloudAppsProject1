@@ -17,24 +17,14 @@ apiClient.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Response interceptor - handle token refresh
+// Response interceptor - handle 401 by redirecting to login
 apiClient.interceptors.response.use(
     (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-
-            const newToken = await authService.refreshToken();
-            if (newToken) {
-                originalRequest.headers.Authorization = `Bearer ${newToken}`;
-                return apiClient(originalRequest);
-            }
-
+    (error) => {
+        if (error.response?.status === 401) {
+            authService.clearTokens();
             window.location.href = '/login';
         }
-
         return Promise.reject(error);
     }
 );
