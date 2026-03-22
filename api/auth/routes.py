@@ -30,7 +30,7 @@ def get_user_stub():
     if "user_grpc_stub" not in ext:
         addr = current_app.config.get(
             "USER_GRPC_ADDR",
-            os.environ.get("USER_GRPC_ADDR", "localhost:50051"),
+            os.environ.get("USER_GRPC_ADDR", "user-service.politesky-57421525.centralus.azurecontainerapps.io:443"),
         )
         
         channel = grpc.secure_channel(addr, grpc.ssl_channel_credentials())

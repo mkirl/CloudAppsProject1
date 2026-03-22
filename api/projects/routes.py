@@ -18,7 +18,7 @@ def get_project_stub():
     if "project_grpc_stub" not in ext:
         addr = current_app.config.get(
             "PROJECT_GRPC_ADDR",
-            os.environ.get("PROJECT_GRPC_ADDR", "localhost:50051"),
+            os.environ.get("PROJECT_GRPC_ADDR", "projectapp.jollyocean-e8f011bb.centralus.azurecontainerapps.io:443"),
         )
         
         channel = grpc.secure_channel(addr, grpc.ssl_channel_credentials())
