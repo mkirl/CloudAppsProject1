@@ -69,8 +69,7 @@ jobs:
           chmod 600 ~/.kube/config
 
       - name: Deploy to k3s
-        env:
-          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
         run: |
+          IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-$(echo ${{ github.sha }} | cut -c1-7)
           kubectl set image deployment/flask flask=$IMAGE -n haas
           kubectl rollout status deployment/flask -n haas --timeout=120s
