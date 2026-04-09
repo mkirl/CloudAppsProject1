@@ -11,5 +11,5 @@ spec:
       app: flask
   endpoints:
     - port: http
-      path: /metrics
+      path: /api/metrics
       interval: 15s

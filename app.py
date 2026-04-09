@@ -39,7 +39,7 @@ def create_app():
     )
 
     FlaskInstrumentor().instrument_app(app)
-    PrometheusMetrics(app)
+    PrometheusMetrics(app, path='/api/metrics')
 
     # JWT Configuration
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-secret-change-me')
