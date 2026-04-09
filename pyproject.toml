@@ -15,6 +15,10 @@ dependencies = [
     "dnspython>=2.8.0",
     "grpcio-tools>=1.78.0",
     "grpcio>=1.78.0",
+    "opentelemetry-distro>=0.51b0",
+    "opentelemetry-exporter-otlp>=1.30.0",
+    "opentelemetry-instrumentation-flask>=0.51b0",
+    "opentelemetry-instrumentation-requests>=0.51b0",
 ]
 
 [dependency-groups]

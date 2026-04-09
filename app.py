@@ -5,15 +5,39 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv()
 
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+
+def configure_telemetry(app_name: str = "flask-app"):
+    otel_endpoint = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "")
+    if not otel_endpoint:
+        return  # OTel disabled when endpoint not configured
+
+    resource = Resource.create({"service.name": app_name})
+    provider = TracerProvider(resource=resource)
+    exporter = OTLPSpanExporter(endpoint=otel_endpoint, insecure=True)
+    provider.add_span_processor(BatchSpanProcessor(exporter))
+    trace.set_tracer_provider(provider)
+    RequestsInstrumentor().instrument()
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FRONTEND_BUILD = os.path.join(BASE_DIR, "frontend", "dist")
 
 def create_app():
+    configure_telemetry(os.environ.get("OTEL_SERVICE_NAME", "flask-app"))
+
     app = Flask(
         __name__,
         static_folder=os.path.join(FRONTEND_BUILD, "assets"),
         template_folder=FRONTEND_BUILD
     )
+
+    FlaskInstrumentor().instrument_app(app)
 
     # JWT Configuration
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-secret-change-me')
