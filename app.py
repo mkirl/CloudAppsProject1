@@ -11,6 +11,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from prometheus_flask_exporter import PrometheusMetrics
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 def configure_telemetry(app_name: str = "flask-app"):
@@ -38,6 +39,7 @@ def create_app():
     )
 
     FlaskInstrumentor().instrument_app(app)
+    PrometheusMetrics(app)
 
     # JWT Configuration
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-secret-change-me')
