@@ -191,6 +191,7 @@ dependencies = [
     { name = "opentelemetry-distro" },
     { name = "opentelemetry-exporter-otlp" },
     { name = "opentelemetry-instrumentation-flask" },
+    { name = "opentelemetry-instrumentation-grpc" },
     { name = "opentelemetry-instrumentation-requests" },
     { name = "prometheus-flask-exporter" },
     { name = "pyjwt" },
@@ -215,6 +216,7 @@ requires-dist = [
     { name = "opentelemetry-distro", specifier = ">=0.51b0" },
     { name = "opentelemetry-exporter-otlp", specifier = ">=1.30.0" },
     { name = "opentelemetry-instrumentation-flask", specifier = ">=0.51b0" },
+    { name = "opentelemetry-instrumentation-grpc", specifier = ">=0.51b0" },
     { name = "opentelemetry-instrumentation-requests", specifier = ">=0.51b0" },
     { name = "prometheus-flask-exporter", specifier = ">=0.23.0" },
     { name = "pyjwt", specifier = ">=2.8.0" },
@@ -613,6 +615,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8e/86/522294f6a80d59560d8f722da59513d2ed2d53c6178fa109789dacc5dd50/opentelemetry_instrumentation_flask-0.62b0.tar.gz", hash = "sha256:330e903c0e92b06aae32f9eb7b8a923599d7a29440f50841a59dbba34ec6dd9f", size = 24100, upload-time = "2026-04-09T14:40:37.111Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/bc/c8/9f3bb38281bcb50c93c3d2358b303645f6917bf972c167484c09f9a97ff1/opentelemetry_instrumentation_flask-0.62b0-py3-none-any.whl", hash = "sha256:8c1f8986ec3887d08899d2eb654625252c929105174911b3b50dcf12b1001807", size = 16006, upload-time = "2026-04-09T14:39:44.401Z" },
+]
+
+[[package]]
+name = "opentelemetry-instrumentation-grpc"
+version = "0.62b0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d9/a8/402b192ca0d68d4a1e8d92630bfb934e9cbc678005826136167f72dadffa/opentelemetry_instrumentation_grpc-0.62b0.tar.gz", hash = "sha256:81de38906190d98e5b6af0a9c2ca9bfc58dd32f93455a26184205479d5209531", size = 31941, upload-time = "2026-04-09T14:40:38.075Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/09/65/0a19425267ce3bc37d41fa29bea568787b9602afc579ea14ba05961b2340/opentelemetry_instrumentation_grpc-0.62b0-py3-none-any.whl", hash = "sha256:c0000c79630e2a3eb6c3491c986319924791a726f45ea01d0bffa182ccb2e3fe", size = 27312, upload-time = "2026-04-09T14:39:45.632Z" },
 ]
 
 [[package]]

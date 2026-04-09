@@ -13,6 +13,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from prometheus_flask_exporter import PrometheusMetrics
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
 
 def configure_telemetry(app_name: str = "flask-app"):
     otel_endpoint = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "")
@@ -25,6 +26,7 @@ def configure_telemetry(app_name: str = "flask-app"):
     provider.add_span_processor(BatchSpanProcessor(exporter))
     trace.set_tracer_provider(provider)
     RequestsInstrumentor().instrument()
+    GrpcInstrumentorClient().instrument()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 FRONTEND_BUILD = os.path.join(BASE_DIR, "frontend", "dist")
