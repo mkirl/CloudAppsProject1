@@ -3,7 +3,8 @@
 import grpc
 import warnings
 
-from api.auth import user_pb2 as api_dot_auth_dot_user__pb2
+from api.hardware import hardware_pb2 as api_dot_hardware_dot_hardware__pb2
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 GRPC_GENERATED_VERSION = '1.78.0'
 GRPC_VERSION = grpc.__version__
@@ -18,14 +19,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in api/auth/user_pb2_grpc.py depends on'
+        + ' but the generated code in api/hardware/hardware_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class UserServiceStub(object):
+class HardwareServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -34,75 +35,75 @@ class UserServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Register = channel.unary_unary(
-                '/haas.user.UserService/Register',
-                request_serializer=api_dot_auth_dot_user__pb2.RegisterRequest.SerializeToString,
-                response_deserializer=api_dot_auth_dot_user__pb2.RegisterResponse.FromString,
+        self.GetHardwareResources = channel.unary_unary(
+                '/haas.hardware.v1.HardwareService/GetHardwareResources',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=api_dot_hardware_dot_hardware__pb2.HardwareListResponse.FromString,
                 _registered_method=True)
-        self.Login = channel.unary_unary(
-                '/haas.user.UserService/Login',
-                request_serializer=api_dot_auth_dot_user__pb2.LoginRequest.SerializeToString,
-                response_deserializer=api_dot_auth_dot_user__pb2.LoginResponse.FromString,
+        self.RequestHardware = channel.unary_unary(
+                '/haas.hardware.v1.HardwareService/RequestHardware',
+                request_serializer=api_dot_hardware_dot_hardware__pb2.HardwareRequest.SerializeToString,
+                response_deserializer=api_dot_hardware_dot_hardware__pb2.Hardware.FromString,
                 _registered_method=True)
-        self.Me = channel.unary_unary(
-                '/haas.user.UserService/Me',
-                request_serializer=api_dot_auth_dot_user__pb2.MeRequest.SerializeToString,
-                response_deserializer=api_dot_auth_dot_user__pb2.MeResponse.FromString,
+        self.ReturnHardware = channel.unary_unary(
+                '/haas.hardware.v1.HardwareService/ReturnHardware',
+                request_serializer=api_dot_hardware_dot_hardware__pb2.HardwareRequest.SerializeToString,
+                response_deserializer=api_dot_hardware_dot_hardware__pb2.Hardware.FromString,
                 _registered_method=True)
 
 
-class UserServiceServicer(object):
+class HardwareServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def Register(self, request, context):
+    def GetHardwareResources(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Login(self, request, context):
+    def RequestHardware(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Me(self, request, context):
+    def ReturnHardware(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_UserServiceServicer_to_server(servicer, server):
+def add_HardwareServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Register': grpc.unary_unary_rpc_method_handler(
-                    servicer.Register,
-                    request_deserializer=api_dot_auth_dot_user__pb2.RegisterRequest.FromString,
-                    response_serializer=api_dot_auth_dot_user__pb2.RegisterResponse.SerializeToString,
+            'GetHardwareResources': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetHardwareResources,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=api_dot_hardware_dot_hardware__pb2.HardwareListResponse.SerializeToString,
             ),
-            'Login': grpc.unary_unary_rpc_method_handler(
-                    servicer.Login,
-                    request_deserializer=api_dot_auth_dot_user__pb2.LoginRequest.FromString,
-                    response_serializer=api_dot_auth_dot_user__pb2.LoginResponse.SerializeToString,
+            'RequestHardware': grpc.unary_unary_rpc_method_handler(
+                    servicer.RequestHardware,
+                    request_deserializer=api_dot_hardware_dot_hardware__pb2.HardwareRequest.FromString,
+                    response_serializer=api_dot_hardware_dot_hardware__pb2.Hardware.SerializeToString,
             ),
-            'Me': grpc.unary_unary_rpc_method_handler(
-                    servicer.Me,
-                    request_deserializer=api_dot_auth_dot_user__pb2.MeRequest.FromString,
-                    response_serializer=api_dot_auth_dot_user__pb2.MeResponse.SerializeToString,
+            'ReturnHardware': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReturnHardware,
+                    request_deserializer=api_dot_hardware_dot_hardware__pb2.HardwareRequest.FromString,
+                    response_serializer=api_dot_hardware_dot_hardware__pb2.Hardware.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'haas.user.UserService', rpc_method_handlers)
+            'haas.hardware.v1.HardwareService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('haas.user.UserService', rpc_method_handlers)
+    server.add_registered_method_handlers('haas.hardware.v1.HardwareService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class UserService(object):
+class HardwareService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def Register(request,
+    def GetHardwareResources(request,
             target,
             options=(),
             channel_credentials=None,
@@ -115,9 +116,9 @@ class UserService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/haas.user.UserService/Register',
-            api_dot_auth_dot_user__pb2.RegisterRequest.SerializeToString,
-            api_dot_auth_dot_user__pb2.RegisterResponse.FromString,
+            '/haas.hardware.v1.HardwareService/GetHardwareResources',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            api_dot_hardware_dot_hardware__pb2.HardwareListResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -129,7 +130,7 @@ class UserService(object):
             _registered_method=True)
 
     @staticmethod
-    def Login(request,
+    def RequestHardware(request,
             target,
             options=(),
             channel_credentials=None,
@@ -142,9 +143,9 @@ class UserService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/haas.user.UserService/Login',
-            api_dot_auth_dot_user__pb2.LoginRequest.SerializeToString,
-            api_dot_auth_dot_user__pb2.LoginResponse.FromString,
+            '/haas.hardware.v1.HardwareService/RequestHardware',
+            api_dot_hardware_dot_hardware__pb2.HardwareRequest.SerializeToString,
+            api_dot_hardware_dot_hardware__pb2.Hardware.FromString,
             options,
             channel_credentials,
             insecure,
@@ -156,7 +157,7 @@ class UserService(object):
             _registered_method=True)
 
     @staticmethod
-    def Me(request,
+    def ReturnHardware(request,
             target,
             options=(),
             channel_credentials=None,
@@ -169,9 +170,9 @@ class UserService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/haas.user.UserService/Me',
-            api_dot_auth_dot_user__pb2.MeRequest.SerializeToString,
-            api_dot_auth_dot_user__pb2.MeResponse.FromString,
+            '/haas.hardware.v1.HardwareService/ReturnHardware',
+            api_dot_hardware_dot_hardware__pb2.HardwareRequest.SerializeToString,
+            api_dot_hardware_dot_hardware__pb2.Hardware.FromString,
             options,
             channel_credentials,
             insecure,

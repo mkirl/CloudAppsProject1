@@ -112,6 +112,7 @@ def create_project():
 def join_project():
     """Join an existing project."""
     data = request.get_json() or {}
+    token = g.current_token
 
     project_id = data.get('projectId', '').strip()
 
