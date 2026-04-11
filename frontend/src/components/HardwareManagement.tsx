@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import type { Hardware } from "../types"
-import { getHardwareResources, requestHardware, returnHardware } from "../client"
+import { getHardwareResources, getProjectHardwareResources, requestHardware, returnHardware } from "../client"
 
 export const HardwareManagement = () => {
 
     const [hardwareState, setHardwareState] = useState<Hardware[]>([])
     const [projectId, setProjectId] = useState<string>("")
+    const [projectHardwareState, setProjectHardwareState] = useState<Hardware[]>([])
     const [requestQuantities, setRequestQuantities] = useState<Record<string, number>>({})
     const [returnQuantities, setReturnQuantities] = useState<Record<string, number>>({})
     const [returnFormVisible, setReturnFormVisible] = useState<boolean>(false)
@@ -28,6 +29,13 @@ export const HardwareManagement = () => {
         .then(resp => {setHardwareState(resp)})
         .catch(() => setError("Failed to load Hardware Resources"))
     }, [])
+
+    const onReturnVisible = async (e: React.FormEvent) => {
+        getProjectHardwareResources(projectId)
+        .then(resp => {setProjectHardwareState(resp)})
+        .catch(() => setError("Failed to load current Project Hardware Resources"))
+        setReturnFormVisible(!returnFormVisible)
+    }
 
     const onRequestSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -64,6 +72,7 @@ export const HardwareManagement = () => {
             }))
             await returnHardware(projectId, returns)
             getHardwareResources().then(resp => setHardwareState(resp))
+            getProjectHardwareResources(projectId).then(resp => setProjectHardwareState(resp))
             setMessage("Hardware returned successfully")
         } catch (err: unknown) {
             const error = err as { response?: { data?: { error?: string } } };
@@ -124,7 +133,7 @@ export const HardwareManagement = () => {
             <button data-testid="hardware-submit-request" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold mt-4 disabled:opacity-60 disabled:cursor-not-allowed" onClick={onRequestSubmit} disabled={isSubmitting}>
                 SUBMIT REQUEST
             </button>
-            <button data-testid="hardware-return-btn" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold mt-4 disabled:opacity-60 disabled:cursor-not-allowed" onClick={() => setReturnFormVisible(!returnFormVisible)} disabled={isSubmitting}>
+            <button data-testid="hardware-return-btn" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold mt-4 disabled:opacity-60 disabled:cursor-not-allowed" onClick={onReturnVisible} disabled={isSubmitting}>
                 RETURN EQUIPMENT
             </button>
             {returnFormVisible &&
@@ -138,7 +147,7 @@ export const HardwareManagement = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {hardwareState.map((h, index) => (
+                            {projectHardwareState.map((h, index) => (
                                 <tr key={h.set} className="border border-black">
                                     <td className="border border-black p-2">{h.set}</td>
                                     <td className="border border-black p-2">{h.checkedOut}</td>

@@ -50,6 +50,11 @@ class HardwareServiceStub(object):
                 request_serializer=api_dot_hardware_dot_hardware__pb2.HardwareRequest.SerializeToString,
                 response_deserializer=api_dot_hardware_dot_hardware__pb2.Hardware.FromString,
                 _registered_method=True)
+        self.GetProjectHardware = channel.unary_unary(
+                '/haas.hardware.v1.HardwareService/GetProjectHardware',
+                request_serializer=api_dot_hardware_dot_hardware__pb2.ProjectRequest.SerializeToString,
+                response_deserializer=api_dot_hardware_dot_hardware__pb2.HardwareListResponse.FromString,
+                _registered_method=True)
 
 
 class HardwareServiceServicer(object):
@@ -73,6 +78,12 @@ class HardwareServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetProjectHardware(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_HardwareServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -90,6 +101,11 @@ def add_HardwareServiceServicer_to_server(servicer, server):
                     servicer.ReturnHardware,
                     request_deserializer=api_dot_hardware_dot_hardware__pb2.HardwareRequest.FromString,
                     response_serializer=api_dot_hardware_dot_hardware__pb2.Hardware.SerializeToString,
+            ),
+            'GetProjectHardware': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetProjectHardware,
+                    request_deserializer=api_dot_hardware_dot_hardware__pb2.ProjectRequest.FromString,
+                    response_serializer=api_dot_hardware_dot_hardware__pb2.HardwareListResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -173,6 +189,33 @@ class HardwareService(object):
             '/haas.hardware.v1.HardwareService/ReturnHardware',
             api_dot_hardware_dot_hardware__pb2.HardwareRequest.SerializeToString,
             api_dot_hardware_dot_hardware__pb2.Hardware.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetProjectHardware(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/haas.hardware.v1.HardwareService/GetProjectHardware',
+            api_dot_hardware_dot_hardware__pb2.ProjectRequest.SerializeToString,
+            api_dot_hardware_dot_hardware__pb2.HardwareListResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -11,6 +11,7 @@ service HardwareService {
     rpc GetHardwareResources (google.protobuf.Empty) returns (HardwareListResponse) {}
     rpc RequestHardware      (HardwareRequest)       returns (Hardware)             {}
     rpc ReturnHardware       (HardwareRequest)       returns (Hardware)             {}
+    rpc GetProjectHardware   (ProjectRequest)        returns (HardwareListResponse) {}
 }
 
 // --- Request Messages ---
@@ -34,4 +35,8 @@ message Hardware {
 
 message HardwareListResponse {
     repeated Hardware hardware_sets = 1;
+}
+
+message ProjectRequest {
+    string project_id = 1;
 }

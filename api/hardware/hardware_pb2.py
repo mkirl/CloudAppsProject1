@@ -26,7 +26,7 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61pi/hardware/hardware.proto\x12\x10haas.hardware.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"J\n\x0fHardwareRequest\x12\x11\n\thw_set_id\x18\x01 \x01(\t\x12\x12\n\nproject_id\x18\x02 \x01(\t\x12\x10\n\x08quantity\x18\x03 \x01(\r\"\x95\x01\n\x08Hardware\x12\x11\n\thw_set_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08\x63\x61pacity\x18\x03 \x01(\r\x12\x11\n\tavailable\x18\x04 \x01(\r\x12\x13\n\x0b\x63hecked_out\x18\x05 \x01(\r\x12.\n\nupdated_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"I\n\x14HardwareListResponse\x12\x31\n\rhardware_sets\x18\x01 \x03(\x0b\x32\x1a.haas.hardware.v1.Hardware2\x92\x02\n\x0fHardwareService\x12X\n\x14GetHardwareResources\x12\x16.google.protobuf.Empty\x1a&.haas.hardware.v1.HardwareListResponse\"\x00\x12R\n\x0fRequestHardware\x12!.haas.hardware.v1.HardwareRequest\x1a\x1a.haas.hardware.v1.Hardware\"\x00\x12Q\n\x0eReturnHardware\x12!.haas.hardware.v1.HardwareRequest\x1a\x1a.haas.hardware.v1.Hardware\"\x00\x42!Z\x1fgithub.com/haas/gen/hardware/v1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61pi/hardware/hardware.proto\x12\x10haas.hardware.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"J\n\x0fHardwareRequest\x12\x11\n\thw_set_id\x18\x01 \x01(\t\x12\x12\n\nproject_id\x18\x02 \x01(\t\x12\x10\n\x08quantity\x18\x03 \x01(\r\"\x95\x01\n\x08Hardware\x12\x11\n\thw_set_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08\x63\x61pacity\x18\x03 \x01(\r\x12\x11\n\tavailable\x18\x04 \x01(\r\x12\x13\n\x0b\x63hecked_out\x18\x05 \x01(\r\x12.\n\nupdated_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"I\n\x14HardwareListResponse\x12\x31\n\rhardware_sets\x18\x01 \x03(\x0b\x32\x1a.haas.hardware.v1.Hardware\"$\n\x0eProjectRequest\x12\x12\n\nproject_id\x18\x01 \x01(\t2\xf4\x02\n\x0fHardwareService\x12X\n\x14GetHardwareResources\x12\x16.google.protobuf.Empty\x1a&.haas.hardware.v1.HardwareListResponse\"\x00\x12R\n\x0fRequestHardware\x12!.haas.hardware.v1.HardwareRequest\x1a\x1a.haas.hardware.v1.Hardware\"\x00\x12Q\n\x0eReturnHardware\x12!.haas.hardware.v1.HardwareRequest\x1a\x1a.haas.hardware.v1.Hardware\"\x00\x12`\n\x12GetProjectHardware\x12 .haas.hardware.v1.ProjectRequest\x1a&.haas.hardware.v1.HardwareListResponse\"\x00\x42!Z\x1fgithub.com/haas/gen/hardware/v1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -40,6 +40,8 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_HARDWARE']._serialized_end=337
   _globals['_HARDWARELISTRESPONSE']._serialized_start=339
   _globals['_HARDWARELISTRESPONSE']._serialized_end=412
-  _globals['_HARDWARESERVICE']._serialized_start=415
-  _globals['_HARDWARESERVICE']._serialized_end=689
+  _globals['_PROJECTREQUEST']._serialized_start=414
+  _globals['_PROJECTREQUEST']._serialized_end=450
+  _globals['_HARDWARESERVICE']._serialized_start=453
+  _globals['_HARDWARESERVICE']._serialized_end=825
 # @@protoc_insertion_point(module_scope)
