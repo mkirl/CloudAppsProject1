@@ -102,7 +102,7 @@ def request_hardware():
         # Update hardware availability
         # should probably update rpc to return a RequestHardwareResponse message with a bool field ok for success instead of relying on grpc error handling for this
         hardware_stub.RequestHardware(hardware_pb2.HardwareRequest(
-            hw_set_id=str(hw.hw_set_id),
+            hw_set_id=str(hw.name),
             project_id=project_id,
             quantity=quantity
         ))
@@ -183,7 +183,7 @@ def return_hardware():
 
         # Update hardware availability (increase)
         hardware_stub.ReturnHardware(hardware_pb2.HardwareRequest(
-            hw_set_id=str(hw.hw_set_id),
+            hw_set_id=str(hw.name),
             project_id=project_id,
             quantity=quantity
         ))
