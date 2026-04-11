@@ -17,13 +17,13 @@ def get_hardware_stub():
     if "hardware_grpc_stub" not in ext:
         addr = current_app.config.get(
             "HARDWARE_GRPC_ADDR",
-            os.environ.get("HARDWARE_GRPC_ADDR", "team6.wonderfulpond-ecedce94.northcentralus.azurecontainerapps.io:443"),
+            os.environ.get("HARDWARE_GRPC_ADDR", "nginx-proxy.wonderfulpond-ecedce94.northcentralus.azurecontainerapps.io:443"),
         )
         
         channel = grpc.secure_channel(addr, grpc.ssl_channel_credentials())
 
         ext["hardware_grpc_channel"] = channel
-        ext["hardware_grpc_stub"] = hardware_pb2_grpc.hardwareServiceStub(channel)
+        ext["hardware_grpc_stub"] = hardware_pb2_grpc.HardwareServiceStub(channel)
 
     return ext["hardware_grpc_stub"]
 
@@ -32,7 +32,7 @@ def get_hardware_stub():
 def get_hardware():
     """Get all hardware sets with availability."""
     stub = get_hardware_stub()
-    hardware_sets = stub.GetHardwareResources()
+    hardware_sets = stub.GetHardwareResources(empty_pb2.Empty()).hardware_sets
 
 
     result = []
@@ -80,6 +80,7 @@ def request_hardware():
     # Process each hardware request
     hardware_stub = get_hardware_stub()
 
+    hardware_sets = hardware_stub.GetHardwareResources(empty_pb2.Empty()).hardware_sets
     for req in requests:
         hw_name = req.get('set')
         quantity = req.get('quantity', 0)
@@ -88,7 +89,8 @@ def request_hardware():
             continue
 
         # Find hardware set
-        hw = hardware_stub.GetHardwareResources(empty_pb2.Empty()).hardware_sets
+        hw = next((hw for hw in hardware_sets if hw.name == hw_name), None)
+
         if not hw:
             return jsonify({'error': f'Hardware set "{hw_name}" not found'}), 404
 
@@ -151,6 +153,7 @@ def return_hardware():
 
     # Process each return
     hardware_stub = get_hardware_stub()
+    hardware_sets = hardware_stub.GetHardwareResources(empty_pb2.Empty()).hardware_sets
     for ret in returns:
         hw_name = ret.get('set')
         quantity = ret.get('quantity', 0)
@@ -159,7 +162,7 @@ def return_hardware():
             continue
 
         # Find hardware set
-        hw = hardware_stub.GetHardwareResources(empty_pb2.Empty()).hardware_sets
+        hw = next((hw for hw in hardware_sets if hw.name == hw_name), None)
         if not hw:
             return jsonify({'error': f'Hardware set "{hw_name}" not found'}), 404
 
@@ -179,7 +182,7 @@ def return_hardware():
             }), 400
 
         # Update hardware availability (increase)
-        hardware_stub.ReturnHardware(hardware_pb2.HardwareReturn(
+        hardware_stub.ReturnHardware(hardware_pb2.HardwareRequest(
             hw_set_id=str(hw.hw_set_id),
             project_id=project_id,
             quantity=quantity
