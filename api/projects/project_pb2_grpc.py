@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from . import project_pb2 as project__pb2
+from api.projects import project_pb2 as api_dot_projects_dot_project__pb2
 
 GRPC_GENERATED_VERSION = '1.78.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in project_pb2_grpc.py depends on'
+        + ' but the generated code in api/projects/project_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,38 +36,38 @@ class ProjectServiceStub(object):
         """
         self.CreateProject = channel.unary_unary(
                 '/ProjectService/CreateProject',
-                request_serializer=project__pb2.CreateProjectRequest.SerializeToString,
-                response_deserializer=project__pb2.CreateProjectResponse.FromString,
+                request_serializer=api_dot_projects_dot_project__pb2.CreateProjectRequest.SerializeToString,
+                response_deserializer=api_dot_projects_dot_project__pb2.CreateProjectResponse.FromString,
                 _registered_method=True)
         self.ListProjects = channel.unary_unary(
                 '/ProjectService/ListProjects',
-                request_serializer=project__pb2.ListProjectsRequest.SerializeToString,
-                response_deserializer=project__pb2.ListProjectsResponse.FromString,
+                request_serializer=api_dot_projects_dot_project__pb2.ListProjectsRequest.SerializeToString,
+                response_deserializer=api_dot_projects_dot_project__pb2.ListProjectsResponse.FromString,
                 _registered_method=True)
         self.GetProject = channel.unary_unary(
                 '/ProjectService/GetProject',
-                request_serializer=project__pb2.GetProjectRequest.SerializeToString,
-                response_deserializer=project__pb2.GetProjectResponse.FromString,
+                request_serializer=api_dot_projects_dot_project__pb2.GetProjectRequest.SerializeToString,
+                response_deserializer=api_dot_projects_dot_project__pb2.GetProjectResponse.FromString,
                 _registered_method=True)
         self.JoinProject = channel.unary_unary(
                 '/ProjectService/JoinProject',
-                request_serializer=project__pb2.JoinProjectRequest.SerializeToString,
-                response_deserializer=project__pb2.JoinProjectResponse.FromString,
+                request_serializer=api_dot_projects_dot_project__pb2.JoinProjectRequest.SerializeToString,
+                response_deserializer=api_dot_projects_dot_project__pb2.JoinProjectResponse.FromString,
                 _registered_method=True)
         self.LeaveProject = channel.unary_unary(
                 '/ProjectService/LeaveProject',
-                request_serializer=project__pb2.LeaveProjectRequest.SerializeToString,
-                response_deserializer=project__pb2.LeaveProjectResponse.FromString,
+                request_serializer=api_dot_projects_dot_project__pb2.LeaveProjectRequest.SerializeToString,
+                response_deserializer=api_dot_projects_dot_project__pb2.LeaveProjectResponse.FromString,
                 _registered_method=True)
         self.CheckUserInProject = channel.unary_unary(
                 '/ProjectService/CheckUserInProject',
-                request_serializer=project__pb2.CheckUserInProjectRequest.SerializeToString,
-                response_deserializer=project__pb2.CheckUserInProjectResponse.FromString,
+                request_serializer=api_dot_projects_dot_project__pb2.CheckUserInProjectRequest.SerializeToString,
+                response_deserializer=api_dot_projects_dot_project__pb2.CheckUserInProjectResponse.FromString,
                 _registered_method=True)
         self.ValidateProject = channel.unary_unary(
                 '/ProjectService/ValidateProject',
-                request_serializer=project__pb2.ValidateProjectRequest.SerializeToString,
-                response_deserializer=project__pb2.ValidateProjectResponse.FromString,
+                request_serializer=api_dot_projects_dot_project__pb2.ValidateProjectRequest.SerializeToString,
+                response_deserializer=api_dot_projects_dot_project__pb2.ValidateProjectResponse.FromString,
                 _registered_method=True)
 
 
@@ -121,38 +121,38 @@ def add_ProjectServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'CreateProject': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateProject,
-                    request_deserializer=project__pb2.CreateProjectRequest.FromString,
-                    response_serializer=project__pb2.CreateProjectResponse.SerializeToString,
+                    request_deserializer=api_dot_projects_dot_project__pb2.CreateProjectRequest.FromString,
+                    response_serializer=api_dot_projects_dot_project__pb2.CreateProjectResponse.SerializeToString,
             ),
             'ListProjects': grpc.unary_unary_rpc_method_handler(
                     servicer.ListProjects,
-                    request_deserializer=project__pb2.ListProjectsRequest.FromString,
-                    response_serializer=project__pb2.ListProjectsResponse.SerializeToString,
+                    request_deserializer=api_dot_projects_dot_project__pb2.ListProjectsRequest.FromString,
+                    response_serializer=api_dot_projects_dot_project__pb2.ListProjectsResponse.SerializeToString,
             ),
             'GetProject': grpc.unary_unary_rpc_method_handler(
                     servicer.GetProject,
-                    request_deserializer=project__pb2.GetProjectRequest.FromString,
-                    response_serializer=project__pb2.GetProjectResponse.SerializeToString,
+                    request_deserializer=api_dot_projects_dot_project__pb2.GetProjectRequest.FromString,
+                    response_serializer=api_dot_projects_dot_project__pb2.GetProjectResponse.SerializeToString,
             ),
             'JoinProject': grpc.unary_unary_rpc_method_handler(
                     servicer.JoinProject,
-                    request_deserializer=project__pb2.JoinProjectRequest.FromString,
-                    response_serializer=project__pb2.JoinProjectResponse.SerializeToString,
+                    request_deserializer=api_dot_projects_dot_project__pb2.JoinProjectRequest.FromString,
+                    response_serializer=api_dot_projects_dot_project__pb2.JoinProjectResponse.SerializeToString,
             ),
             'LeaveProject': grpc.unary_unary_rpc_method_handler(
                     servicer.LeaveProject,
-                    request_deserializer=project__pb2.LeaveProjectRequest.FromString,
-                    response_serializer=project__pb2.LeaveProjectResponse.SerializeToString,
+                    request_deserializer=api_dot_projects_dot_project__pb2.LeaveProjectRequest.FromString,
+                    response_serializer=api_dot_projects_dot_project__pb2.LeaveProjectResponse.SerializeToString,
             ),
             'CheckUserInProject': grpc.unary_unary_rpc_method_handler(
                     servicer.CheckUserInProject,
-                    request_deserializer=project__pb2.CheckUserInProjectRequest.FromString,
-                    response_serializer=project__pb2.CheckUserInProjectResponse.SerializeToString,
+                    request_deserializer=api_dot_projects_dot_project__pb2.CheckUserInProjectRequest.FromString,
+                    response_serializer=api_dot_projects_dot_project__pb2.CheckUserInProjectResponse.SerializeToString,
             ),
             'ValidateProject': grpc.unary_unary_rpc_method_handler(
                     servicer.ValidateProject,
-                    request_deserializer=project__pb2.ValidateProjectRequest.FromString,
-                    response_serializer=project__pb2.ValidateProjectResponse.SerializeToString,
+                    request_deserializer=api_dot_projects_dot_project__pb2.ValidateProjectRequest.FromString,
+                    response_serializer=api_dot_projects_dot_project__pb2.ValidateProjectResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -180,8 +180,8 @@ class ProjectService(object):
             request,
             target,
             '/ProjectService/CreateProject',
-            project__pb2.CreateProjectRequest.SerializeToString,
-            project__pb2.CreateProjectResponse.FromString,
+            api_dot_projects_dot_project__pb2.CreateProjectRequest.SerializeToString,
+            api_dot_projects_dot_project__pb2.CreateProjectResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -207,8 +207,8 @@ class ProjectService(object):
             request,
             target,
             '/ProjectService/ListProjects',
-            project__pb2.ListProjectsRequest.SerializeToString,
-            project__pb2.ListProjectsResponse.FromString,
+            api_dot_projects_dot_project__pb2.ListProjectsRequest.SerializeToString,
+            api_dot_projects_dot_project__pb2.ListProjectsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -234,8 +234,8 @@ class ProjectService(object):
             request,
             target,
             '/ProjectService/GetProject',
-            project__pb2.GetProjectRequest.SerializeToString,
-            project__pb2.GetProjectResponse.FromString,
+            api_dot_projects_dot_project__pb2.GetProjectRequest.SerializeToString,
+            api_dot_projects_dot_project__pb2.GetProjectResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -261,8 +261,8 @@ class ProjectService(object):
             request,
             target,
             '/ProjectService/JoinProject',
-            project__pb2.JoinProjectRequest.SerializeToString,
-            project__pb2.JoinProjectResponse.FromString,
+            api_dot_projects_dot_project__pb2.JoinProjectRequest.SerializeToString,
+            api_dot_projects_dot_project__pb2.JoinProjectResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -288,8 +288,8 @@ class ProjectService(object):
             request,
             target,
             '/ProjectService/LeaveProject',
-            project__pb2.LeaveProjectRequest.SerializeToString,
-            project__pb2.LeaveProjectResponse.FromString,
+            api_dot_projects_dot_project__pb2.LeaveProjectRequest.SerializeToString,
+            api_dot_projects_dot_project__pb2.LeaveProjectResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -315,8 +315,8 @@ class ProjectService(object):
             request,
             target,
             '/ProjectService/CheckUserInProject',
-            project__pb2.CheckUserInProjectRequest.SerializeToString,
-            project__pb2.CheckUserInProjectResponse.FromString,
+            api_dot_projects_dot_project__pb2.CheckUserInProjectRequest.SerializeToString,
+            api_dot_projects_dot_project__pb2.CheckUserInProjectResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -342,8 +342,8 @@ class ProjectService(object):
             request,
             target,
             '/ProjectService/ValidateProject',
-            project__pb2.ValidateProjectRequest.SerializeToString,
-            project__pb2.ValidateProjectResponse.FromString,
+            api_dot_projects_dot_project__pb2.ValidateProjectRequest.SerializeToString,
+            api_dot_projects_dot_project__pb2.ValidateProjectResponse.FromString,
             options,
             channel_credentials,
             insecure,

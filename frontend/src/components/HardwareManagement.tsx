@@ -6,10 +6,8 @@ export const HardwareManagement = () => {
 
     const [hardwareState, setHardwareState] = useState<Hardware[]>([])
     const [projectId, setProjectId] = useState<string>("")
-    const [setOneRequest, setSetOneRequest] = useState<number>(0)
-    const [setTwoRequest, setSetTwoRequest] = useState<number>(0)
-    const [setOneReturn, setSetOneReturn] = useState<number>(0)
-    const [setTwoReturn, setSetTwoReturn] = useState<number>(0)
+    const [requestQuantities, setRequestQuantities] = useState<Record<string, number>>({})
+    const [returnQuantities, setReturnQuantities] = useState<Record<string, number>>({})
     const [returnFormVisible, setReturnFormVisible] = useState<boolean>(false)
 
     const [message, setMessage] = useState("")
@@ -38,10 +36,11 @@ export const HardwareManagement = () => {
         setIsSubmitting(true)
 
         try {
-            await requestHardware(projectId, [
-                { set: "HW Set 1", quantity: setOneRequest },
-                { set: "HW Set 2", quantity: setTwoRequest }
-            ])
+            const requests = hardwareState.map((h) => ({
+                set: h.set,
+                quantity: requestQuantities[h.set] ?? 0,
+            }))
+            await requestHardware(projectId, requests)
             getHardwareResources().then(resp => setHardwareState(resp))
             setMessage("Hardware requested successfully")
         } catch (err: unknown) {
@@ -59,10 +58,11 @@ export const HardwareManagement = () => {
         setIsSubmitting(true)
 
         try {
-            await returnHardware(projectId, [
-                { set: "HW Set 1", quantity: setOneReturn },
-                { set: "HW Set 2", quantity: setTwoReturn }
-            ])
+            const returns = hardwareState.map((h) => ({
+                set: h.set,
+                quantity: returnQuantities[h.set] ?? 0,
+            }))
+            await returnHardware(projectId, returns)
             getHardwareResources().then(resp => setHardwareState(resp))
             setMessage("Hardware returned successfully")
         } catch (err: unknown) {
@@ -110,21 +110,21 @@ export const HardwareManagement = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {hardwareState.map(h => (
+                    {hardwareState.map((h, index) => (
                         <tr key={h.set} className="border border-white">
                             <td className="border border-white p-2">{h.set}</td>
                             <td className="border border-white p-2">{h.capacity}</td>
                             <td className="border border-white p-2">{h.available}</td>
-                            <input data-testid={`request-${h.set === "HW Set 1" ? "set1" : "set2"}`} type="number" className="border border-[#BF5700] p-2 bg-white text-black w-20 mx-auto" placeholder="0"
-                                onChange={(e) => h.set === "HW Set 1" ? setSetOneRequest(Number(e.target.value)) : setSetTwoRequest(Number(e.target.value))}/>
+                            <input data-testid={`request-set${index + 1}`} type="number" className="border border-[#BF5700] p-2 bg-white text-black w-20 mx-auto" placeholder="0"
+                                onChange={(e) => setRequestQuantities((prev) => ({ ...prev, [h.set]: Number(e.target.value) || 0 }))}/>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            <button data-testid="hardware-submit-request" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold mt-4" onClick={onRequestSubmit}>
+            <button data-testid="hardware-submit-request" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold mt-4 disabled:opacity-60 disabled:cursor-not-allowed" onClick={onRequestSubmit} disabled={isSubmitting}>
                 SUBMIT REQUEST
             </button>
-            <button data-testid="hardware-return-btn" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold mt-4" onClick={() => setReturnFormVisible(!returnFormVisible)}>
+            <button data-testid="hardware-return-btn" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold mt-4 disabled:opacity-60 disabled:cursor-not-allowed" onClick={() => setReturnFormVisible(!returnFormVisible)} disabled={isSubmitting}>
                 RETURN EQUIPMENT
             </button>
             {returnFormVisible &&
@@ -138,17 +138,17 @@ export const HardwareManagement = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {hardwareState.map(h => (
+                            {hardwareState.map((h, index) => (
                                 <tr key={h.set} className="border border-black">
                                     <td className="border border-black p-2">{h.set}</td>
                                     <td className="border border-black p-2">{h.checkedOut}</td>
-                                    <input data-testid={`return-${h.set === "HW Set 1" ? "set1" : "set2"}`} type="number" className="border border-[#BF5700] p-2 bg-white text-black w-20 mx-auto" placeholder="0"
-                                        onChange={(e) => h.set === "HW Set 1" ? setSetOneReturn(Number(e.target.value)) : setSetTwoReturn(Number(e.target.value))}/>
+                                    <input data-testid={`return-set${index + 1}`} type="number" className="border border-[#BF5700] p-2 bg-white text-black w-20 mx-auto" placeholder="0"
+                                        onChange={(e) => setReturnQuantities((prev) => ({ ...prev, [h.set]: Number(e.target.value) || 0 }))}/>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-                    <button data-testid="hardware-return-submit" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold text-center mx-auto" onClick={onReturnSubmit}>
+                    <button data-testid="hardware-return-submit" className="flex bg-[#BF5700] text-white p-2 rounded cursor-pointer font-bold text-center mx-auto disabled:opacity-60 disabled:cursor-not-allowed" onClick={onReturnSubmit} disabled={isSubmitting}>
                         SUBMIT
                     </button>
                 </div>
