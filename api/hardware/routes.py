@@ -54,14 +54,14 @@ def get_hardware():
 def get_project_hardware(project_id):
     """Get hardware allocated to a specific project."""
     stub = get_hardware_stub()
-    hardware_sets = stub.GetProjectHardware(hardware_pb2.ProjectRequest(project_id=project_id)).hardware_sets
+    hardware_sets = stub.GetProjectResourceStatus(hardware_pb2.ProjectRequest(project_id=project_id)).resources
 
     result = []
     for hw in hardware_sets:
         set = hw.name
         capacity = hw.capacity
         available = hw.available
-        checked_out = hw.checked_out
+        checked_out = hw.quantity_checked_out
         result.append({
             'set': set,
             'capacity': capacity,
@@ -162,7 +162,7 @@ def return_hardware():
     # Process each return
     hardware_stub = get_hardware_stub()
     hardware_sets = hardware_stub.GetHardwareResources(empty_pb2.Empty()).hardware_sets
-    project_allocations = hardware_stub.GetProjectHardware(hardware_pb2.ProjectRequest(project_id=project_id)).hardware_sets
+    project_allocations = hardware_stub.GetProjectResourceStatus(hardware_pb2.ProjectRequest(project_id=project_id)).resources
     for ret in returns:
         hw_name = ret.get('set')
         quantity = ret.get('quantity', 0)
@@ -182,7 +182,7 @@ def return_hardware():
 
         # TODO when project allocations are tracked, check that the project has enough of this hardware allocated to return
         # Check project has enough allocated
-        allocation = hw_set_checked_out_proj.checked_out
+        allocation = hw_set_checked_out_proj.quantity_checked_out
 
         if not allocation or allocation < quantity:
             return jsonify({

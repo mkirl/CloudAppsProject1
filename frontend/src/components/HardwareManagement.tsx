@@ -31,9 +31,11 @@ export const HardwareManagement = () => {
     }, [])
 
     const onReturnVisible = async (e: React.FormEvent) => {
+        e.preventDefault()
         getProjectHardwareResources(projectId)
         .then(resp => {setProjectHardwareState(resp)})
         .catch(() => setError("Failed to load current Project Hardware Resources"))
+        setReturnQuantities({})
         setReturnFormVisible(!returnFormVisible)
     }
 
@@ -66,13 +68,20 @@ export const HardwareManagement = () => {
         setIsSubmitting(true)
 
         try {
-            const returns = hardwareState.map((h) => ({
+            const returns = projectHardwareState.map((h) => ({
                 set: h.set,
                 quantity: returnQuantities[h.set] ?? 0,
-            }))
+            })).filter((r) => r.quantity > 0)
+
+            if (returns.length === 0) {
+                setError("Enter a return quantity greater than 0")
+                return
+            }
+
             await returnHardware(projectId, returns)
             getHardwareResources().then(resp => setHardwareState(resp))
             getProjectHardwareResources(projectId).then(resp => setProjectHardwareState(resp))
+            setReturnQuantities({})
             setMessage("Hardware returned successfully")
         } catch (err: unknown) {
             const error = err as { response?: { data?: { error?: string } } };
