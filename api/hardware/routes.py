@@ -49,6 +49,27 @@ def get_hardware():
 
     return jsonify(result), 200
 
+@hardware_bp.route('/project/<project_id>', methods=['GET'])
+@jwt_required
+def get_project_hardware(project_id):
+    """Get hardware allocated to a specific project."""
+    stub = get_hardware_stub()
+    hardware_sets = stub.GetProjectResourceStatus(hardware_pb2.ProjectRequest(project_id=project_id)).resources
+
+    result = []
+    for hw in hardware_sets:
+        set = hw.name
+        capacity = hw.capacity
+        available = hw.available
+        checked_out = hw.quantity_checked_out
+        result.append({
+            'set': set,
+            'capacity': capacity,
+            'available': available,
+            'checkedOut': checked_out
+        })
+
+    return jsonify(result), 200
 
 @hardware_bp.route('/request', methods=['POST'])
 @jwt_required
@@ -107,19 +128,6 @@ def request_hardware():
             quantity=quantity
         ))
 
-        # TODO when project allocations are tracked, update project allocations for this hardware set
-        # # Update project allocation
-        # result = current_app.db.projects.update_one(
-        #     {'project_id': project_id, 'hw_allocations.hw_set_id': str(hw['_id'])},
-        #     {'$inc': {'hw_allocations.$.count': quantity}}
-        # )
-
-        # # If no existing allocation, add new one
-        # if result.matched_count == 0:
-        #     current_app.db.projects.update_one(
-        #         {'project_id': project_id},
-        #         {'$push': {'hw_allocations': {'hw_set_id': str(hw['_id']), 'count': quantity}}}
-        #     )
 
     return jsonify({'message': 'Hardware checked out successfully'}), 200
 
@@ -154,6 +162,7 @@ def return_hardware():
     # Process each return
     hardware_stub = get_hardware_stub()
     hardware_sets = hardware_stub.GetHardwareResources(empty_pb2.Empty()).hardware_sets
+    project_allocations = hardware_stub.GetProjectResourceStatus(hardware_pb2.ProjectRequest(project_id=project_id)).resources
     for ret in returns:
         hw_name = ret.get('set')
         quantity = ret.get('quantity', 0)
@@ -165,17 +174,16 @@ def return_hardware():
         hw = next((hw for hw in hardware_sets if hw.name == hw_name), None)
         if not hw:
             return jsonify({'error': f'Hardware set "{hw_name}" not found'}), 404
+        
+        # Find hardware allocation for this set for project
+        hw_set_checked_out_proj = next((hw for hw in project_allocations if hw.name == hw_name), None)
+        if not hw_set_checked_out_proj:
+            return jsonify({'error': f'Project does not have any "{hw_name}" allocated'}), 400
 
         # TODO when project allocations are tracked, check that the project has enough of this hardware allocated to return
         # Check project has enough allocated
-        # hw_allocations = project.allocations
-        # allocation = next(
-        #     (a for a in hw_allocations if a['hw_set_id'] == str(hw['_id'])),
-        #     None
-        # )
+        allocation = hw_set_checked_out_proj.quantity_checked_out
 
-        # workaround until project allocations are tracked
-        allocation = hw.capacity - hw.available
         if not allocation or allocation < quantity:
             return jsonify({
                 'error': f'Cannot return {quantity} of "{hw_name}". Project only has {allocation if allocation else 0}'
@@ -187,11 +195,5 @@ def return_hardware():
             project_id=project_id,
             quantity=quantity
         ))
-
-        # # Update project allocation (decrease)
-        # current_app.db.projects.update_one(
-        #     {'project_id': project_id, 'hw_allocations.hw_set_id': str(hw['_id'])},
-        #     {'$inc': {'hw_allocations.$.count': -quantity}}
-        # )
 
     return jsonify({'message': 'Hardware returned successfully'}), 200

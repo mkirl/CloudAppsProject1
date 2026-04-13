@@ -51,6 +51,11 @@ export const getHardwareResources = async (): Promise<Hardware[]> => {
     return response.data;
 }
 
+export const getProjectHardwareResources = async (projectId: string): Promise<Hardware[]> => {
+    const response = await apiClient.get(`/api/hardware/project/${projectId}`);
+    return response.data;
+}
+
 export const requestHardware = async (projectId: string, requests: { set: string, quantity: number }[]): Promise<void> => {
     await apiClient.post('/api/hardware/request', { projectId, requests });
 }
